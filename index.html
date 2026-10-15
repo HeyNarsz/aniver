@@ -248,7 +248,7 @@ var CHAPTERS=[
    {dx:420,t:'friend',label:'Stephanie',emo:'kiss',hair:'long',hc:'#8a4b2a',top:'#b36bd6'},
    {dx:500,t:'friend',label:'Bornie',emo:'jump',hair:'short',hc:'#c9a24a',top:'#3fb7b0'},
    {dx:580,t:'friend',label:'Ana',emo:'wave2',hair:'long',hc:'#3a2418',top:'#e8708a'}],
-  text:'Em 10 de fevereiro de 2021 nasceu a ParWolf. Um grupo criado por mim e pelo biel e desde o inicio você estava lá, onde chamamos o Vitor e a Brenda, e depois chegaram Felipe, Stephanie, Bornie e Ana. Algumas pessoas seguiram outros caminhos, e tudo bem. Quem ficou virou a nossa segunda família, a que a gente escolheu e que está sempre por perto.'},
+  text:'Em 10 de fevereiro de 2021 nasceu a ParWolf. Um grupo criado por mim e pelo biel e desde o inicio você estava lá, onde chamamos o Vitor e a Brenda, e depois chegaram Felipe, Stephanie, Bornie e Ana. Algumas pessoas seguiram outros caminhos, e tudo bem. Quem ficou virou a nossa segunda família, a que a gente escolheu e que está sempre por perto. Até mesmo as antigas amizades ficaram ainda mais fortes, como no caso da sua amizade com a Livia.'},
  {w:440,date:'FIM DE 2021 A 2022',tab:'21-22',sign:'21-22',title:'Dias de chuva',
   obj:'Colete as 3 luzes. Mesmo na chuva, elas continuam acesas.',
   items:[{dx:140,h:0,t:'light',label:'respira'},{dx:250,h:1,t:'light',label:'juntos'},{dx:365,h:0,t:'light',label:'um dia de cada vez'}],
@@ -810,7 +810,7 @@ function update(dt){
   if(state!=='title'){var dl=Math.abs(P.x-LIVIA.wx);if(LIVIA.et>0)LIVIA.et-=dt;
     if(dl>95)LIVIA.armed=true;
     if(LIVIA.armed!==false&&dl<64&&!(LIVIA.et>0)){LIVIA.armed=false;LIVIA.et=2.4;sparkle(LIVIA.wx,30,'#ff7eb6',8)}
-    if(!LIVIA.got&&dl<24&&state==='play'){LIVIA.got=true;toast('Lívia: amiga de uma vida');sparkle(LIVIA.wx,30,'#ff7eb6',16);P.react={mode:'cheer',dm:0,t:1.6,wait:0};J.react={mode:'wave',dm:0,t:1.4,wait:.2}}}
+    if(!LIVIA.got&&dl<24&&state==='play'){LIVIA.got=true;toast('Lívia ! amiga pra vida !');sparkle(LIVIA.wx,30,'#ff7eb6',16);P.react={mode:'cheer',dm:0,t:1.6,wait:0};J.react={mode:'wave',dm:0,t:1.4,wait:.2}}}
   if(state!=='title')CHAPTERS[1].items.forEach(function(it){
     var d=Math.abs(P.x-it.wx);if(it.et>0)it.et-=dt;
     if(d>95)it.armed=true;if(d>80)it.ra=true;
