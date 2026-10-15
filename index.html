@@ -422,6 +422,7 @@ function drawChar(x,y,o,t){
   if(o.front)pu(1,-25+yh,3,6,o.front);
   if(o.s1)pu(2,-25+yh,2,6,o.s1);
   if(o.s2){pu(-1,-25+yh,2,4,o.s2);pu(-5,-22+yh,1,4,o.s2)}
+  if(o.sun){pu(-3,-25+yh,3,2,'#0d0a10');pu(1,-25+yh,3,2,'#0d0a10');pu(0,-25+yh,1,1,'#ffd166');pu(-3,-25+yh,1,1,'#ffd9a0')}
   if(o.hat){var hh=o.hat;pu(-3,-26+yh,6,1,hh);pu(-2,-27+yh,4,1,'#ffffff');pu(-2,-28+yh,4,1,hh);pu(-1,-29+yh,2,1,'#ffffff');pu(-1,-30+yh,2,1,hh);pu(-1,-32+yh,3,2,'#ffd166')}
   /* rosto */
   if(blink){pu(-1+eyx,-17+yh,1,1,o.eye);pu(2+eyx,-17+yh,1,1,o.eye)}
@@ -460,6 +461,9 @@ function ico(type,x,y,a,col){
   else{var c=col||'#ff7eb6';R(x-3,y+2,4,3,c);R(x,y-6,1,9,c);R(x+1,y-6,3,2,c);R(x+3,y-4,1,2,c)}
   ctx.globalAlpha=1;
 }
+var LIVIA={dx:48,got:false,et:0,
+  o:{style:'long',hc:'#0b080e',skin:'#e0b697',eye:'#0b080e',top:'#e8643f',topD:'#c24d2c',pants:'#f1e6d2',boots:'#a0714a',acc:'#ffd166',sun:true}};
+LIVIA.wx=starts[1]+LIVIA.dx;LIVIA.armed=true;
 function friendPose(it){
   if(!(it.et>0))return null;
   var age=EMO_D-it.et,r={mode:'',hop:0,dm:0,flip:0,ico:null,age:age};
@@ -521,7 +525,7 @@ function maxX(){var a=activeIdx();if(a<LAST)return starts[a]+CHAPTERS[a].w-14;re
 function loadSaved(){try{var n=parseInt(localStorage.getItem('nlt_done')||'0',10);return isNaN(n)?0:clamp(n,0,LAST)}catch(e){return 0}}
 function save(n){try{localStorage.setItem('nlt_done',String(n))}catch(e){}}
 function resetAll(){
-  CHAPTERS.forEach(function(c){c.done=false;c.count=0;c.items.forEach(function(it){it.got=false;it.et=0;it.armed=true;it.ra=true})});
+  CHAPTERS.forEach(function(c){c.done=false;c.count=0;c.items.forEach(function(it){it.got=false;it.et=0;it.armed=true;it.ra=true});LIVIA.got=false;LIVIA.et=0;LIVIA.armed=true});
   PAIR='';INK=null;P.tat=0;P.react=null;J.react=null;J.side=-1;
   P.still=0;P.dancing=false;P.danceT=0;P.cheer=0;J.cheer=0;J.cheerD=0;J.dancing=false;J.danceT=0;
   Snd.stopSong();holdStop=null;curZone=-2;lastWant='';candlesOut=false;BLOW=-1;SP.length=0;P.x=40;P.y=0;P.vy=0;J.x=24;camX=0;storyIdx=-1;
@@ -803,6 +807,10 @@ function update(dt){
   if(P.wasAir&&!P.air){dust(P.x-3,4);dust(P.x+3,4)}
   P.wasAir=P.air;
   [P,J].forEach(function(w){var r=w.react;if(r){if(r.wait>0)r.wait-=dt;else{r.t-=dt;if(r.t<=0)w.react=null}}});
+  if(state!=='title'){var dl=Math.abs(P.x-LIVIA.wx);if(LIVIA.et>0)LIVIA.et-=dt;
+    if(dl>95)LIVIA.armed=true;
+    if(LIVIA.armed!==false&&dl<64&&!(LIVIA.et>0)){LIVIA.armed=false;LIVIA.et=2.4;sparkle(LIVIA.wx,30,'#ff7eb6',8)}
+    if(!LIVIA.got&&dl<24&&state==='play'){LIVIA.got=true;toast('Lívia: amiga de uma vida');sparkle(LIVIA.wx,30,'#ff7eb6',16);P.react={mode:'cheer',dm:0,t:1.6,wait:0};J.react={mode:'wave',dm:0,t:1.4,wait:.2}}}
   if(state!=='title')CHAPTERS[1].items.forEach(function(it){
     var d=Math.abs(P.x-it.wx);if(it.et>0)it.et-=dt;
     if(d>95)it.armed=true;if(d>80)it.ra=true;
@@ -1290,6 +1298,15 @@ function drawSprites(t){
   var ci=idxAt(P.x),p=posAt(P.x);
   /* fadinhas do ParWolf */
   var c1=CHAPTERS[1];if(starts[1]+c1.w>camX&&starts[1]<camX+W)fairy(starts[1]+10-camX,starts[1]+c1.w-10-camX,t);
+  /* Lívia */
+  if(LIVIA.wx+30>camX&&LIVIA.wx-30<camX+W){
+    var lx=LIVIA.wx-camX,lp=friendPose({et:LIVIA.et,emo:'twirl'}),lf=P.x<LIVIA.wx?-1:1,lb=lp?lp.hop:0,lo=Object.assign({},LIVIA.o,{f:lf,walk:false,air:lb>2,seed:5.3,mode:lp?lp.mode:'',dm:0});
+    R(lx-5,GY,10,2,'rgba(0,0,0,.3)');if(lp&&lp.flip)lo.f=lp.flip;
+    drawChar(lx,GY-lb,lo,t);
+    if(lp&&lp.ico){ico('heart',lx+6,GY-44-Math.min(lp.age*8,14),clamp((EMO_D-lp.age)/.5,0,1),'#ff7eb6')}
+    else if(LIVIA.got){var hy=Math.round(Math.sin(t*3)*1.5);pix(HEART,lx-3,GY-40+hy,'#ff5c8a')}
+    else{var by2=Math.round(Math.sin(t*4)*1.5);R(lx-1,GY-37+by2,2,5,'#ff7eb6');R(lx-1,GY-30+by2,2,2,'#ff7eb6')}
+  }
   /* itens */
   CHAPTERS.forEach(function(c){
     if(c.start+c.w<camX-30||c.start>camX+W+30)return;
@@ -1309,11 +1326,12 @@ function drawSprites(t){
   });
   /* festa: os amigos do ParWolf batem palmas */
   if(ci===LAST||idxAt(P.x+W)===LAST){
-    var pb=starts[LAST],PARTY=[[pb+125,0,1],[pb+153,1,1],[pb+181,2,1],[CAKEX+28,3,-1],[CAKEX+44,4,-1],[CAKEX+60,5,-1],[CAKEX+76,6,-1]];
+    var pb=starts[LAST],PARTY=[[pb+100,0,1],[pb+128,1,1],[pb+156,2,1],[CAKEX-68,'L',1],[CAKEX+28,3,-1],[CAKEX+44,4,-1],[CAKEX+60,5,-1],[CAKEX+76,6,-1]];
     PARTY.forEach(function(g,k){
-      var gx=g[0]-camX;if(gx<-20||gx>W+20)return;var fi2=CHAPTERS[1].items[g[1]],bn=Math.round(Math.abs(Math.sin(t*6+k))*2);
+      var gx=g[0]-camX;if(gx<-20||gx>W+20)return;var fi2=g[1]==='L'?LIVIA.o:CHAPTERS[1].items[g[1]],bn=Math.round(Math.abs(Math.sin(t*6+k))*2);
       R(gx-5,GY,10,2,'rgba(0,0,0,.3)');
-      drawChar(gx,GY-bn,{f:g[2],walk:false,air:false,style:fi2.hair,hc:fi2.hc,skin:'#f0cfba',eye:'#3a2a1f',top:fi2.top,topD:fi2.top,pants:'#2b2f4a',boots:'#1d1d26',acc:null,seed:k*1.3,mode:'clap'},t);
+      if(g[1]==='L'){drawChar(gx,GY-bn,Object.assign({},LIVIA.o,{f:1,walk:false,air:false,seed:k*1.3,mode:'clap'}),t);if(Math.sin(t*2.2)>.2)ico('heart',gx+5,GY-42-Math.round((t*9)%8),1-((t*9)%8)/8,'#ff7eb6')}
+      else drawChar(gx,GY-bn,{f:g[2],walk:false,air:false,style:fi2.hair,hc:fi2.hc,skin:'#f0cfba',eye:'#3a2a1f',top:fi2.top,topD:fi2.top,pants:'#2b2f4a',boots:'#1d1d26',acc:null,seed:k*1.3,mode:'clap'},t);
     });
   }
   /* bolo, balões */
